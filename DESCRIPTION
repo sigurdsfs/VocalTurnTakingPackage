@@ -9,9 +9,6 @@ Description: Provides function to simulate vocal turn taking data
     with any of the model hypothesis.
 License: What license is it under?
 Encoding: UTF-8
-Imports:
-    dplyr (>= 1.0.0)
-    tidyverse (>= 1.3.2)
 Suggests:
     covr,
     knitr,
