@@ -1,3 +1,19 @@
+#' @title Generative model of Arousal based turn-taking.
+#'
+#' @description Simulates dyadic vocal turn taking timings based on the arousal model.
+#' Calls have no duration.
+#'
+#' @param n Number of Observations
+#' @param mu_latency Average latency between consecutive calls per caller.
+#' @param sd_latency Uncertainty around the average latency between calls.
+
+#'
+#' @return A data frame object that contains our dyadic interlocutors
+#' @examples
+#'
+#' @export
+#' @importFrom dplyr "%>%"
+
 Arousal_Simulation_No_Stochasticity <- function(n, mu_latency, sd_latency){
   if ( any( n%%1 != 0 | n < 0 | length(n) != 1 )) stop("n should be an integer between 1:Infinity")
   if ( any( mu_latency%%1 != 0 | mu_latency < 0 | length(mu_latency) != 1)) stop("mu_latency should be numeric and between 1:Infinity")

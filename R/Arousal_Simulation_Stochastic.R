@@ -16,6 +16,24 @@
 # mu_latency: The average wait time between consecutive calls for each individual.
 # sd_latency: The uncertainty regarding the latency between calls.
 
+#' @title Generative model of Arousal based turn-taking.
+#'
+#' @description Simulates dyadic vocal turn taking timings based on the arousal model.
+#' This model includes a stochastic element. The probability of Interlocutor B  calling increases as the number of calls heard from
+#' interlocutor B increases. We have modelled the relationship with a sigmoid activation function.
+#' Calls have no duration.
+#'
+#' @param n Number of Observations
+#' @param mu_latency Average latency between consecutive calls per caller.
+#' @param sd_latency Uncertainty around the average latency between calls.
+
+#'
+#' @return A data frame object that contains our dyadic interlocutors
+#' @examples
+#'
+#' @export
+#' @importFrom dplyr "%>%"
+
 
 Arousal_Simulation_Stochastic <- function(n, mu_latency, sd_latency){
   if ( any( n%%1 != 0 | n < 0 | length(n) != 1 )) stop("n should be an integer between 1:Infinity")

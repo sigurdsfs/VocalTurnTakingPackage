@@ -13,6 +13,24 @@
 # mu_duration: What is the average call duration of our callers.
 # sd_duration: What is the uncertainity in the average call duration.
 
+#' @title Baseline Simulation
+#'
+#' @description Simulates baseline dyadic vocal turn taking based on the reset hypothesis.
+#' All callers have an internal clock which determines the latency between consecutive calls.
+#' The clock of caller B is reset if caller A is calling during the period in which caller B were expected to be calling.
+#'
+#' @param n Number of Observations
+#' @param mu_latency Average latency between consecutive calls per caller.
+#' @param sd_latency Uncertainty around the average latency between calls.
+#' @param mu_duration Average duration of each call.
+#' @param sd_duration Uncertainty in average call duration.
+#'
+#' @return A data frame object that contains our dyadic interlocutors
+#' @examples
+#'
+#' @export
+#' @importFrom dplyr "%>%"
+
 
 Reset_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_duration){
   #Condition/warnings

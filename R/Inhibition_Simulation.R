@@ -15,6 +15,30 @@
 ### WE NEED TO GENERALIZE TO CASES WHERE A CALLER CAN MAKE MULTIPLE CALLS BEFORE THE OTHER ENTERS.
 # We can do this if we create different latency and duration parameters for every individual caller. (just add two more variables to our function)
 
+
+
+
+#' @title Baseline Simulation
+#'
+#' @description Simulates baseline dyadic vocal turn taking based on the inhibition hypothesis.
+#' The call of all others are inhibited as long as another caller is calling.
+#'
+#' @param n Number of Observations
+#' @param mu_latency Average latency between consecutive calls per caller.
+#' @param sd_latency Uncertainty around the average latency between calls.
+#' @param mu_duration Average duration of each call.
+#' @param sd_duration Uncertainty in average call duration.
+#'
+#' @return A data frame object that contains our dyadic interlocutors
+#' @examples
+#'
+#' @export
+#' @importFrom dplyr "%>%"
+
+
+
+
+
 Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_duration){
   if ( any( n%%1 != 0 | n < 0 | length(n) != 1 )) stop("n should be an integer between 1:Infinity")
   if ( any( mu_latency%%1 != 0 | mu_latency < 0 | length(mu_latency) != 1)) stop("mu_latency should be numeric and between 1:Infinity")

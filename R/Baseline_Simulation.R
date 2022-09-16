@@ -13,20 +13,19 @@
 
 
 
-#' @title overview_tab
+#' @title Baseline Simulation
 #'
-#' @description Provides an overview table for the time and scope conditions of
-#'     a data set
+#' @description Simulates baseline dyadic vocal turn taking with no interaction between the callers.
 #'
-#' @param dat A data set object
-#' @param id Scope (e.g., country codes or individual IDs)
-#' @param time Time (e.g., time periods are given by years, months, ...)
+#' @param n Number of Observations
+#' @param mu_latency Average latency between consecutive calls per caller.
+#' @param sd_latency Uncertainty around the average latency between calls.
+#' @param mu_duration Average duration of each call.
+#' @param sd_duration Uncertainty in average call duration.
 #'
-#' @return A data frame object that contains a summary of a sample that
-#'     can later be converted to a TeX output using \code{overview_print}
+#' @return A data frame object that contains our dyadic interlocutors
 #' @examples
-#' data(toydata)
-#' output_table <- overview_tab(dat = toydata, id = ccode, time = year)
+#'
 #' @export
 #' @importFrom dplyr "%>%"
 
