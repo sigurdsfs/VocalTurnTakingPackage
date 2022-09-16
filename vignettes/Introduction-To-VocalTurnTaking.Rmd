@@ -1,0 +1,251 @@
+---
+title: "Introduction-To-VocalTurnTaking"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction-To-VocalTurnTaking}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(VocalTurnTaking)
+library(tidyverse)
+library(here)
+library(readxl)
+```
+
+
+ID: Unique ID for every individual caller
+CallNr: In case a group has several instances of communication. i.e. They start communicating, takes a pause and then initiate another instance of communication.
+Group: Different groups communicating. Individuals should not be able to communicate across groups
+Onset: The start time for every initiated call.
+Offset: The end time for every initiated call.
+Latency: The difference between Onset and the previous calls Offset. 
+(Duration): The duration of every call, can be found by Duration = Offset - Onset. Not required for all models but is very useful. 
+
+
+
+
+# Testing of Models
+
+## Testing Simulated Data
+
+#### Inhibition Generative Model
+```{r}
+### Testing Inhibiton
+
+#There are some issues with sizes of two data frames sometimes not matching... Should be looked at..
+df_list_inhib <- list()
+for (i in 1:10){
+  Start <- Sys.time()
+  df_list_inhib[[i]] <- Inhibition_Simulation(n = 100, mu_latency = 150, sd_latency = 15, mu_duration = 300, sd_duration = 100) %>% 
+    mutate(Group = i) %>% 
+    mutate(ID = ID*i)
+  End <- Sys.time()
+  print(End - Start)
+}
+```
+
+
+```{r}
+#Bind all simulated data sets together
+Inhibition_Sim <- do.call("rbind", df_list_inhib)
+
+#Test
+InhibitionHypothesis(Inhibition_Sim)
+
+ResetHypothesis(Inhibition_Sim)
+```
+
+#### Reset Generative Model
+```{r}
+### Testing Reset
+
+#Simulate Several Instances of Reset data.
+df_list <- list()
+for (i in 1:10){
+  Start <- Sys.time()
+  df_list[[i]] <- Reset_Simulation(n = 100, mu_latency = 150, sd_latency = 15, mu_duration = 300, sd_duration = 100) %>% 
+    mutate(Group = i)
+  End <- Sys.time()
+  print(End - Start)
+}
+#Bind all simulated data sets together
+Reset_Sim <- do.call("rbind", df_list)
+
+#Testing
+ResetHypothesis(Reset_Sim)
+InhibitionHypothesis(Reset_Sim)
+
+
+```
+
+#### Arousal Generative Model
+```{r}
+#Simulate Several Instances of Arousal data.
+df_list <- list()
+for (i in 1:10){
+  Start <- Sys.time()
+  df_list[[i]] <- Arousal_Simulation_Stochastic(n = 100, mu_latency = 150, sd_latency = 15) %>% 
+    mutate(Group = i)
+  End <- Sys.time()
+  print(End - Start)
+}
+#Bind all simulated data sets together
+Arousal_Sim <- do.call("rbind", df_list)
+
+#Testing
+ResetHypothesis(Arousal_Sim)
+
+InhibitionHypothesis(mutate(Arousal_Sim, Offset = Onset)) # Assumes 0 duration calls. 
+```
+
+
+```{r}
+#Simulate Several Instances of Arousal data.
+df_list <- list()
+for (i in 1:10){
+  Start <- Sys.time()
+  df_list[[i]] <- Arousal_Simulation_No_Stochasticity(n = 100, mu_latency = 150, sd_latency = 15) %>% 
+    mutate(Group = i)
+  End <- Sys.time()
+  print(End - Start)
+}
+#Bind all simulated data sets together
+Arousal_Sim2 <- do.call("rbind", df_list)
+
+#Testing
+ResetHypothesis(Arousal_Sim2)
+
+InhibitionHypothesis(mutate(Arousal_Sim2, Offset = Onset)) # Assumes 0 duration calls.
+```
+
+
+#### Baseline Generative Model
+```{r}
+#Simulate Several Instances of Baseline data.
+df_list <- list()
+for (i in 1:10){
+  Start <- Sys.time()
+  df_list[[i]] <- Baseline_Simulation(n = 100, mu_latency = 150, sd_latency = 15, mu_duration = 50, sd_duration = 10) %>% 
+    mutate(Group = i)
+  End <- Sys.time()
+  print(End - Start)
+}
+#Bind all simulated data sets together
+Baseline_Sim <- do.call("rbind", df_list)
+
+#Testing
+InhibitionHypothesis(Baseline_Sim)
+ResetHypothesis(Baseline_Sim)
+```
+
+
+
+## Testing Empirical Data
+
+#### Whale
+```{r}
+df_whale <- read_csv(here("Data", "PilotWhales_jensen.csv"))
+
+df_whale_small <- df_whale %>%
+  select(BoutLatency, BoutStartTime, BoutEndTime, Duration, bout,ID, Group) %>% 
+  rename(Latency = BoutLatency, Onset = BoutStartTime, Offset = BoutEndTime, CallNr = bout)
+```
+
+
+```{r}
+ResetHypothesis(df_whale_small)
+```
+
+```{r}
+InhibitionHypothesis(df_whale_small)
+```
+
+#### Meerkats
+https://pubmed.ncbi.nlm.nih.gov/30416063/
+
+**TO DO**
+Get information on the variables. I need to know which variable is ID and which is CallNr (initiation of new communication)...
+
+```{r}
+
+df_Meerkat <- read_excel(here("Data", "Meerkats_demartsev.xlsx"))
+names(df_Meerkat) <- gsub(" ", "", names(df_Meerkat))
+names(df_Meerkat) <- gsub("#", "", names(df_Meerkat))
+
+df_Meerkat %>% 
+  select(starttime, endtime, Group, FocalID, infile) %>% 
+  rename(Onset = starttime, Offset = endtime) 
+
+
+unique(df_Meerkat$Group)
+unique(df_Meerkat$FocalID)
+```
+
+#### Wrens song
+**Questions**
+1) The current ID columns reports "male" or "female". Is it because we only have two birds, a female and a male? I am currently assuming ID (gender) acts a a unique identifier for each communicator. 
+
+2) I am currently saying that a latency of over 30 is viewed as initation a new conversation. 
+```{r}
+load(here("Data","wrens_song.rda"))
+wrens <- wrens %>%  
+  rename(Onset = start, Offset = end) %>% 
+  mutate(Latency = Onset - lag(Offset), Duration = Offset - Onset) %>% 
+  mutate(NewCall = if_else(Latency > 30 ,1 ,0)) %>%  #Is it one long recording or several small communique combined. 
+  mutate(CallNr = 1)
+wrens
+
+for (i in 2:nrow(wrens)){
+  if (wrens$NewCall[i] == 0){
+      wrens$CallNr[i] <- lag(wrens$CallNr)[i]
+  }
+  else{
+    wrens$CallNr[i] <- lag(wrens$CallNr)[i] + 1
+  }
+}
+
+ResetHypothesis(wrens)
+
+InhibitionHypothesis(wrens)
+
+```
+#### Manakins Song
+1) Only 1 pair communicating so we can't test Inhibition Hypothesis as this involves shuffling pairs. 
+2) Questions about the ID column again. 
+```{r}
+load(here("Data","manakins_song.rda"))
+manakins <- manakins %>%  
+  rename(Onset = start, Offset = end) %>% 
+  mutate(Latency = Onset - lag(Offset), Duration = Offset - Onset) %>% 
+  mutate(NewCall = if_else(Latency > 30 ,1 ,0)) %>%  #Is it one long recording or several small communique combined. 
+  mutate(CallNr = 1)
+
+ResetHypothesis(manakins)
+```
+#### Chickadees
+1) This is communication between a bird and an "audio recording of a bird". 
+
+2) Only 1 pair communicating so we can't test Inhibition Hypothesis as this involves shuffling pairs. 
+```{r}
+load(here("Data","chickadees_song.rda"))
+
+chickadees <- chickadees %>%  
+  rename(Onset = start, Offset = end) %>% 
+  mutate(Latency = Onset - lag(Offset), Duration = Offset - Onset) %>% 
+  mutate(NewCall = if_else(Latency > 30 ,1 ,0)) %>%  #Is it one long recording or several small communique combined. 
+  mutate(CallNr = 1)
+
+ResetHypothesis(chickadees)
+
+```
+
+
