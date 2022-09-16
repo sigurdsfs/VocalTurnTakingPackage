@@ -1,5 +1,3 @@
-##Activation Functions##
-
 ### Arousal Model: ###
 
 ## Neigh is the initiator, focal is the second individual, who, in the arousal model follows the neighbor
