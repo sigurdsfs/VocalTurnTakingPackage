@@ -120,7 +120,6 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
 
   names(data_focal) <- gsub(pattern = "Focal*", replacement = "", x = names(data_focal))
   names(data_neigh) <- gsub(pattern = "Neighbor*", replacement = "", x = names(data_neigh))
-
   IOI <- rbind(data_focal, data_neigh) %>%
     filter(Inhibited != 1) %>%
     arrange(Onset) %>%

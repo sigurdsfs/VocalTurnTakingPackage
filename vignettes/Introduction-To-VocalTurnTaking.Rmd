@@ -16,8 +16,8 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(devtools)
-
-#library(VocalTurnTaking)
+install_github("sigurdsfs/VocalTurnTakingPackage")
+library(VocalTurnTaking)
 library(tidyverse)
 library(here)
 library(readxl)
@@ -49,10 +49,11 @@ for (i in 1:10){
   Start <- Sys.time()
   df_list_inhib[[i]] <- Inhibition_Simulation(n = 100, mu_latency = 150, sd_latency = 15, mu_duration = 300, sd_duration = 100) %>% 
     mutate(Group = i) %>% 
-    mutate(ID = ID*i)
+    mutate(ID = ID+(i*2))
   End <- Sys.time()
   print(End - Start)
 }
+
 ```
 
 
