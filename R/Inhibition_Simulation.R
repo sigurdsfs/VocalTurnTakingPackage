@@ -94,6 +94,11 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
     FocalInhibited = IOI_focal$Inhibited
   )
 
+
+
+  #print(data_inhibition)
+  #The problem is in this chunk
+  ###############
   for (i in seq(n)) {
     if (data_inhibition$NeighborInhibited[i] == 1) {
       data_inhibition$NeighborOnset[i] <- NA
@@ -109,6 +114,9 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
       data_inhibition$FocalInterval[i] <- NA
     }
   }
+  ################
+  #print(data_inhibition)
+
   #Final changes to the combined data
   data_neigh <- data_inhibition %>%
     select(starts_with("Neigh")) %>%
@@ -120,6 +128,8 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
 
   names(data_focal) <- gsub(pattern = "Focal*", replacement = "", x = names(data_focal))
   names(data_neigh) <- gsub(pattern = "Neighbor*", replacement = "", x = names(data_neigh))
+
+
   IOI <- rbind(data_focal, data_neigh) %>%
     filter(Inhibited != 1) %>%
     arrange(Onset) %>%
