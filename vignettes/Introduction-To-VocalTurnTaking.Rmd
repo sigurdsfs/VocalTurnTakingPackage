@@ -15,7 +15,9 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(VocalTurnTaking)
+library(devtools)
+
+#library(VocalTurnTaking)
 library(tidyverse)
 library(here)
 library(readxl)
@@ -153,11 +155,13 @@ ResetHypothesis(Baseline_Sim)
 
 #### Whale
 ```{r}
-df_whale <- read_csv(here("Data", "PilotWhales_jensen.csv"))
+df_whale_small <- load(here("Data","PilotWhales_jensen.rda"))
 
 df_whale_small <- df_whale %>%
   select(BoutLatency, BoutStartTime, BoutEndTime, Duration, bout,ID, Group) %>% 
   rename(Latency = BoutLatency, Onset = BoutStartTime, Offset = BoutEndTime, CallNr = bout)
+
+save(df_whale_small, file = here("Data","PilotWhales_jensen.rda")) 
 ```
 
 
@@ -176,10 +180,8 @@ https://pubmed.ncbi.nlm.nih.gov/30416063/
 Get information on the variables. I need to know which variable is ID and which is CallNr (initiation of new communication)...
 
 ```{r}
+load(here("Data","Meerkats.rda")) 
 
-df_Meerkat <- read_excel(here("Data", "Meerkats_demartsev.xlsx"))
-names(df_Meerkat) <- gsub(" ", "", names(df_Meerkat))
-names(df_Meerkat) <- gsub("#", "", names(df_Meerkat))
 
 df_Meerkat %>% 
   select(starttime, endtime, Group, FocalID, infile) %>% 
