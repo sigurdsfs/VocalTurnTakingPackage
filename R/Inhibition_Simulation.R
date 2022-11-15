@@ -10,7 +10,7 @@
 #
 #                   ## Call Duration ##
 # mu_duration: What is the average call duration of our callers.
-# sd_duration: What is the uncertainity in the average call duration.
+# sd_duration: What is the uncertainty in the average call duration.
 
 ### WE NEED TO GENERALIZE TO CASES WHERE A CALLER CAN MAKE MULTIPLE CALLS BEFORE THE OTHER ENTERS.
 # We can do this if we create different latency and duration parameters for every individual caller. (just add two more variables to our function)
@@ -18,7 +18,7 @@
 
 
 
-#' @title Baseline Simulation
+#' @title Inhibition hypothesis Simulation
 #'
 #' @description Simulates baseline dyadic vocal turn taking based on the inhibition hypothesis.
 #' The call of all others are inhibited as long as another caller is calling.
@@ -29,7 +29,7 @@
 #' @param mu_duration Average duration of each call.
 #' @param sd_duration Uncertainty in average call duration.
 #'
-#' @return A data frame object that contains our dyadic interlocutors
+#' @return A data frame object that contains our dyadic interlocutors.
 #' @examples
 #'
 #' @export

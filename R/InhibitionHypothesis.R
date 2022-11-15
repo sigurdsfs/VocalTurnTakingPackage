@@ -4,6 +4,13 @@
 #'
 #' @description
 #'    We test whether empirical data could have been generated under the inhibition hypothesis.
+#'    The function is not written to be adaptive so the data frame column names must match that
+#'    of the ones used in the function.
+#'    ID %cat: There must be an ID column with has a unique ID for each interlocutor.
+#'    CallNr %disc: This column should keep track of the sequence of calls. 1.st call 2nd call so forth.
+#'    Onset %numeric: When an interlocutor starts their call.
+#'    Offset %numeric: When an interlocutor stops their call.
+#'
 #'
 #' @param df The data frame we wish to test.
 #'

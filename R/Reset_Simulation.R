@@ -1,23 +1,11 @@
 ## RESET Hypothesis
 
-
-# Authors:
-#                       ## Variables ##
-# n: Number of observations before filtering for inhibited calls.
-#
-#                       ## Latency ##
-# mu_latency: The average wait time between consecutive calls for each individual.
-# sd_latency: The uncertainty regarding the latency between calls.
-#
-#                   ## Call Duration ##
-# mu_duration: What is the average call duration of our callers.
-# sd_duration: What is the uncertainity in the average call duration.
-
-#' @title Baseline Simulation
+#' @title Reset hypothesis Simulation
 #'
 #' @description Simulates baseline dyadic vocal turn taking based on the reset hypothesis.
 #' All callers have an internal clock which determines the latency between consecutive calls.
 #' The clock of caller B is reset if caller A is calling during the period in which caller B were expected to be calling.
+#'
 #'
 #' @param n Number of Observations
 #' @param mu_latency Average latency between consecutive calls per caller.

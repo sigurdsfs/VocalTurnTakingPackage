@@ -1,4 +1,4 @@
-#' @title Generative model of Arousal based turn-taking.
+#' @title Generative model of arousal based turn-taking.
 #'
 #' @description Simulates dyadic vocal turn taking timings based on the arousal model.
 #' Calls have no duration.

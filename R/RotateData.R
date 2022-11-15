@@ -18,9 +18,10 @@
 #'
 RotateData <- function(d, threshold, delay) {
 
-  # We create rotated datasets
-  ## for each whale but the first we add a random n of seconds to the timeseries of starting points
-  ## we take the shifted timeseries which are now longer than the bout and we cut and paste the sticking out bit to the beginning
+  # We create rotated data sets.
+  # for each whale but the first we add a random n of seconds to the time series of starting points
+  # we take the shifted time series which are now longer than the original bout series.
+  # we cut and paste the sticking out bit to the beginning
 
   for (i in unique(d$bout)){
 

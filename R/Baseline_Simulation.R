@@ -16,6 +16,7 @@
 #' @title Baseline Simulation
 #'
 #' @description Simulates baseline dyadic vocal turn taking with no interaction between the callers.
+#' I.e. All calls made are independent off calls from other animals.
 #'
 #' @param n Number of Observations
 #' @param mu_latency Average latency between consecutive calls per caller.
