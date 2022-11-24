@@ -46,8 +46,8 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
   if ( any( mu_duration%%1 != 0 | mu_latency < 0 | length(mu_latency) != 1)) stop("mu_duration should be numeric and between 1:Infinity")
   if ( any( sd_duration%%1 != 0 | sd_latency < 0 | length(sd_latency) != 1)) stop("sd_duration should be numeric and between 1:Infinity")
 
-  IOI_neigh <- tibble(Interval = abs(rnorm(n, mu_latency, sd_latency)), Duration = abs(rnorm(n, mu_duration, sd_duration)), Onset = NA, Offset = NA, Inhibited = NA, ID = 1) # The neighboring individual is freely vocalizing at its tempo
-  IOI_focal <- tibble(Interval = abs(rnorm(n, mu_latency, sd_latency)), Duration = abs(rnorm(n, mu_duration, sd_duration)), Onset = NA, Offset = NA, Inhibited = NA, ID = 2) # The neighboring individual is freely vocalizing at its tempo
+  IOI_neigh <- dplyr::tibble(Interval = abs(rnorm(n, mu_latency, sd_latency)), Duration = abs(rnorm(n, mu_duration, sd_duration)), Onset = NA, Offset = NA, Inhibited = NA, ID = 1) # The neighboring individual is freely vocalizing at its tempo
+  IOI_focal <- dplyr::tibble(Interval = abs(rnorm(n, mu_latency, sd_latency)), Duration = abs(rnorm(n, mu_duration, sd_duration)), Onset = NA, Offset = NA, Inhibited = NA, ID = 2) # The neighboring individual is freely vocalizing at its tempo
 
   for (i in 1:n){
     if (i == 1){
@@ -81,7 +81,7 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
 
 
   #Plot stuff
-  data_inhibition <- tibble(
+  data_inhibition <- dplyr::tibble(
     NeighborOnset = IOI_neigh$Onset,
     NeighborDuration = IOI_neigh$Duration,
     NeighborInterval = IOI_neigh$Interval,
@@ -96,10 +96,8 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
 
 
 
-  #print(data_inhibition)
-  #The problem is in this chunk
-  ###############
-  for (i in seq(n)) {
+
+  for (i in seq(n-1)) {
     if (data_inhibition$NeighborInhibited[i] == 1) {
       data_inhibition$NeighborOnset[i] <- NA
       data_inhibition$NeighborDuration[i] <- NA
@@ -114,16 +112,14 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
       data_inhibition$FocalInterval[i] <- NA
     }
   }
-  ################
-  #print(data_inhibition)
 
   #Final changes to the combined data
   data_neigh <- data_inhibition %>%
-    select(starts_with("Neigh")) %>%
-    mutate(ID = 1)
+    dplyr::select(starts_with("Neigh")) %>%
+    dplyr::mutate(ID = 1)
   data_focal <- data_inhibition %>%
-    select(starts_with("Focal")) %>%
-    mutate(ID = 2)
+    dplyr::select(starts_with("Focal")) %>%
+    dplyr::mutate(ID = 2)
 
 
   names(data_focal) <- gsub(pattern = "Focal*", replacement = "", x = names(data_focal))
@@ -131,14 +127,16 @@ Inhibition_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_dur
 
 
   IOI <- rbind(data_focal, data_neigh) %>%
-    filter(Inhibited != 1) %>%
-    arrange(Onset) %>%
-    rename(Latency = Interval)
+    dplyr::filter(Inhibited != 1) %>%
+    dplyr::arrange(Onset) %>%
+    dplyr::rename(Latency = Interval)
 
-  IOI <- mutate_at(IOI, vars(Onset, Offset), function(x) x - IOI$Latency[1])
+  IOI <- dplyr::mutate_at(IOI, vars(Onset, Offset), function(x) x - IOI$Latency[1])
   IOI$Latency[1] <- NA
 
   IOI$CallNr <- 1
 
   return(IOI)
 }
+
+
