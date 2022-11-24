@@ -37,6 +37,8 @@ Reset_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_duration
       Offset = Onset + Duration
     )
 
+
+
   IOI_focal <- tibble(Interval = rnorm(1, mu_latency, sd_latency),
                       Duration = rnorm(1, mu_duration, sd_duration)) %>% # The neighboring individual is freely vocalizing at its tempo
     mutate(
