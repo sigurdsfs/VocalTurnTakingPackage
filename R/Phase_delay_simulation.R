@@ -24,7 +24,7 @@
 
 
 ### NOTE TO SELF #####
-# We could possibly filter out all Overlapping calls = 1 which are not eligible for phase-correction. (I.e. their calls would be inhibitied)
+# We could possibly filter out all Overlapping calls = 1 which are not eligible for phase-correction. (I.e. their calls would be inhibited)
 
 Phase_delay_simulation <- function(n,b, latency_mean, latency_sd, duration_mean, duration_sd, cutoff){
   require(dplyr)
@@ -46,8 +46,6 @@ Phase_delay_simulation <- function(n,b, latency_mean, latency_sd, duration_mean,
                          CallNr = 1:n) %>%
     dplyr::mutate(Onset = Interval, Offset = Onset + Duration)
 
-
-
   for (i in 2:n){
     IOI_1$Onset[i] = IOI_1$Offset[i-1] + IOI_1$Interval[i]
     IOI_1$Offset[i] = IOI_1$Onset[i] + IOI_1$Duration[i]
@@ -56,8 +54,6 @@ Phase_delay_simulation <- function(n,b, latency_mean, latency_sd, duration_mean,
     IOI_2$Offset[i] = IOI_2$Onset[i] + IOI_2$Duration[i]
 
   }
-
-  print(c(nrow(IOI_1), nrow(IOI_2)))
 
   IOI_combined <- rbind(IOI_1, IOI_2) %>%
     dplyr::arrange(Onset) %>%
@@ -72,9 +68,11 @@ Phase_delay_simulation <- function(n,b, latency_mean, latency_sd, duration_mean,
   for (i in 1:nrow(IOI_combined)){
     if (IOI_combined$Overlapping[i] == 0 & IOI_combined$Onset_Latency[i] < cutoff){ #Check if persons call are overlapping and elgible for phase correction.
 
-      Call_to_adjust <- which(IOI_combined$ID == IOI_combined$ID[i] & IOI_combined$CallNr == IOI_combined$CallNr[i]+1)
+      Call_to_adjust <- which(IOI_combined$ID == IOI_combined$ID[i] & IOI_combined$CallNr == IOI_combined$CallNr[i]+1) #Find the next call of the person who are going to phase correct.
 
-      Phase_correction <-  rnorm(1, mean = IOI_combined$Onset_Latency[i], sd = b * IOI_combined$Onset_Latency[i])
+      Phase_correction <-  rnorm(1, mean = IOI_combined$Onset_Latency[i], sd = b * IOI_combined$Onset_Latency[i]) # Phase correction
+
+      #### Updating timing with the new phase correction for the call in question. ####
 
       #Adjust interval
       IOI_combined$Interval[Call_to_adjust] <- IOI_combined$Interval[Call_to_adjust] - Phase_correction
@@ -85,7 +83,8 @@ Phase_delay_simulation <- function(n,b, latency_mean, latency_sd, duration_mean,
 
 
 
-      #Adjust the remaining calls
+      ### Adjust the remaining calls for the phase correction ###
+
       for (ii in min(nrow(IOI_combined),1+Call_to_adjust):nrow(IOI_combined)){
         #On-, Offset
         IOI_combined$Onset[ii] <- IOI_combined$Offset[ii-1] + IOI_combined$Interval[ii]
@@ -103,7 +102,11 @@ Phase_delay_simulation <- function(n,b, latency_mean, latency_sd, duration_mean,
 
 }
 
-#ok <- Phase_delay_simulation(n = 150, b = 1/10, latency_mean = 5, latency_sd = 2, duration_mean = 15, duration_sd = 4, cutoff =4)
+ok <- Phase_delay_simulation(n = 150, b = 1/10, latency_mean = 5, latency_sd = 2, duration_mean = 15, duration_sd = 4, cutoff =4)
+
+
+
+360 * 1/ok$Duration * ok$Onset_Latency
 
 
 
