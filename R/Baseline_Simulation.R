@@ -30,9 +30,6 @@
 #' @export
 #' @importFrom dplyr "%>%"
 
-
-
-
 Baseline_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_duration){
   if ( any( n%%1 != 0 | n < 0 | length(n) != 1 )) stop("n should be an integer between 1:Infinity")
   if ( any( mu_latency%%1 != 0 | mu_latency < 0 | length(mu_latency) != 1)) stop("mu_latency should be numeric and between 1:Infinity")
@@ -63,10 +60,15 @@ Baseline_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_durat
 
   IOI <- rbind(IOI_1, IOI_2) %>%
     arrange(Onset) %>%
-    mutate(Latency = Onset - lag(Offset)) %>%
-    mutate(CallNr = 1)
+    mutate(Latency = Onset - lag(Offset))
+
+  IOI <- IOI %>%
+    mutate(CallNr = seq(nrow(IOI)))
 
   return(IOI)
 }
+
+data <- Baseline_Simulation(n = 100, mu_latency = 200, sd_latency = 50, mu_duration = 100, sd_duration = 20)
+
 
 
