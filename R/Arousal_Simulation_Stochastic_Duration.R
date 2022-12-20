@@ -39,7 +39,7 @@ Arousal_Simulation_Stochastic_duration <- function(n, mu_latency, sd_latency, mu
   for (i in 1:n) {
     if (i == 1) {
       IOI_neigh$Onset[i] = IOI_neigh$Interval[i]
-      IOI_neigh$Offset[i] = IOI_neigh$Onset + IOI_neigh$Duration
+      IOI_neigh$Offset[i] = IOI_neigh$Onset[i] + IOI_neigh$Duration[i]
     } else {
       IOI_neigh$Onset[i] = IOI_neigh$Interval[i] + IOI_neigh$Offset[i - 1]
       IOI_neigh$Offset[i]= IOI_neigh$Onset[i] + IOI_neigh$Duration[i]
@@ -51,7 +51,7 @@ Arousal_Simulation_Stochastic_duration <- function(n, mu_latency, sd_latency, mu
 
   n_since_call <- 1
   for (i in 1:n){
-    prob_of_responding <- sigmoid(n_since_call - 3)
+    prob_of_responding <- sigmoid(n_since_call - 2)
     Talk_boolean <- rbinom(1,1, prob = prob_of_responding)
 
     if (Talk_boolean == 1){
@@ -71,11 +71,30 @@ Arousal_Simulation_Stochastic_duration <- function(n, mu_latency, sd_latency, mu
   IOI <- rbind(IOI_focal, IOI_neigh) %>%
     filter(Onset != "NA") %>%
     arrange(Onset) %>%
-    rename(Latency = Interval) %>%
+    mutate(Latency = Interval) %>%
     mutate(ID = caller) %>%
-    mutate(CallNr = 1) %>%
     mutate(Latency = Onset - lag(Offset))
+
+  IOI <- IOI %>%
+    mutate(CallNr = seq(nrow(IOI)))
+
   IOI$Latency[1] <- NA
 
   return(IOI)
 }
+
+SimulatedData <- Arousal_Simulation_Stochastic_duration(n = 50,
+                                       mu_latency = 200,
+                                       sd_latency = 50,
+                                       mu_duration = 100,
+                                       sd_duration = 20)
+
+ArousalData <- SimulatedData %>%
+  mutate(ID = as.factor(ID)) %>%
+  mutate(NeighbourInterval = lag(Interval)) #create a neighbor interval column
+
+ggplot(data = subset(ArousalData, ID == "Responder")) + # subset to focal individual
+  geom_point(aes(x = NeighbourInterval, y = Latency, color = ID)) +
+  scale_color_manual(values=viridis(n = 3)) +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw()

@@ -15,7 +15,7 @@
 #' @export
 #' @importFrom dplyr "%>%"
 
-Arousal_Simulation_No_Stochasticity_Duration <- function(n, mu_latency, sd_latency, mu_duration ,sd_duration){
+Arousal_Simulation_No_Stochasticity_Duration <- function(n, mu_latency, sd_latency, mu_duration, sd_duration){
   if ( any( n%%1 != 0 | n < 0 | length(n) != 1 )) stop("n should be an integer between 1:Infinity")
   if ( any( mu_latency%%1 != 0 | mu_latency < 0 | length(mu_latency) != 1)) stop("mu_latency should be numeric and between 1:Infinity")
   if ( any( sd_latency%%1 != 0 | sd_latency < 0 | length(sd_latency) != 1)) stop("sd_latency should be numeric and between 1:Infinity")
@@ -27,7 +27,7 @@ Arousal_Simulation_No_Stochasticity_Duration <- function(n, mu_latency, sd_laten
   for (i in 1:n) {
     if (i == 1) {
       IOI_neigh$Onset[i] = IOI_neigh$Interval[i]
-      IOI_neigh$Offset[i] = IOI_neigh$Onset + IOI_neigh$Duration
+      IOI_neigh$Offset[i] = IOI_neigh$Onset[i] + IOI_neigh$Duration[i]
     } else {
       IOI_neigh$Onset[i] = IOI_neigh$Interval[i] + IOI_neigh$Offset[i - 1]
       IOI_neigh$Offset[i]= IOI_neigh$Onset[i] + IOI_neigh$Duration[i]
@@ -48,12 +48,30 @@ Arousal_Simulation_No_Stochasticity_Duration <- function(n, mu_latency, sd_laten
 
   IOI <- rbind(IOI_focal, IOI_neigh) %>%
     arrange(Onset) %>%
-    rename(Latency = Interval) %>%
+    mutate(Latency = Interval) %>%
     mutate(ID = caller) %>%
-    mutate(CallNr = 1) %>%
     mutate(Latency = Onset - lag(Offset))
+
+  IOI <- IOI %>%
+    mutate(CallNr = seq(nrow(IOI)))
 
   IOI$Latency[1] <- NA
 
   return(IOI)
 }
+
+SimulatedData <- Arousal_Simulation_No_Stochasticity_Duration(n = 50,
+                                               mu_latency = 200,
+                                               sd_latency = 50,
+                                               mu_duration = 100,
+                                               sd_duration = 20)
+
+ArousalData <- SimulatedData %>%
+  mutate(ID = as.factor(ID)) %>%
+  mutate(NeighbourInterval = lag(Interval)) #create a neighbor interval column
+
+ggplot(data = subset(ArousalData, ID == "Responder")) + # subset to focal individual
+  geom_point(aes(x = NeighbourInterval, y = Latency, color = ID)) +
+  scale_color_manual(values=viridis(n = 3)) +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw()

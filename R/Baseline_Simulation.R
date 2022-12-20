@@ -68,7 +68,18 @@ Baseline_Simulation <- function(n, mu_latency, sd_latency, mu_duration, sd_durat
   return(IOI)
 }
 
-data <- Baseline_Simulation(n = 100, mu_latency = 200, sd_latency = 50, mu_duration = 100, sd_duration = 20)
+SimulatedData <- Baseline_Simulation(n = 100,
+                                     mu_latency = 200,
+                                     sd_latency = 50,
+                                     mu_duration = 100,
+                                     sd_duration = 20)
 
+BaselineData <- SimulatedData %>%
+  mutate(ID = as.factor(ID)) %>%
+  mutate(NeighbourInterval = lag(Interval)) #create a neighbor interval column
 
-
+ggplot(data = subset(BaselineData, ID == "2")) + # subset to focal individual
+  geom_point(aes(x = NeighbourInterval, y = Latency, color = ID)) +
+  scale_color_manual(values=viridis(n = 3)) +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw()

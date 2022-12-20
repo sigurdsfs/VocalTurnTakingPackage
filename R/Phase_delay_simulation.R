@@ -101,10 +101,20 @@ Phase_delay_simulation <- function(n,b, latency_mean, latency_sd, duration_mean,
   return(IOI_combined)
 
 }
+SimulatedData <- Phase_delay_simulation(
+  n = 500, b = 100, latency_mean = 200, latency_sd = 50, duration_mean = 100, duration_sd = 20, cutoff = 50)
+
+PhaseDelayData <- SimulatedData %>%
+  mutate(ID = as.factor(ID)) %>%
+  mutate(NeighbourInterval = lag(Interval)) #create a neighbor interval column
+
+ggplot(data = subset(PhaseDelayData, ID == "2")) + # subset to focal individual
+  geom_point(aes(x = NeighbourInterval, y = Interval, color = ID)) +
+  scale_color_manual(values=viridis(n = 3)) +
+  geom_abline(intercept = 0, slope = 1) +
+  theme_bw()
 
 ok <- Phase_delay_simulation(n = 150, b = 1/10, latency_mean = 5, latency_sd = 2, duration_mean = 15, duration_sd = 4, cutoff = 4)
-
-
 
 360 * 1/ok$Duration * ok$Onset_Latency
 
